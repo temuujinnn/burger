@@ -29,7 +29,7 @@ export const loadOrdersSuccess = (loadedOrders) => {
 export const loadOrdersError = (error) => {
   return {
     type: "LOAD_ORDERS_ERROR",
-    orders: error,
+    error,
   };
 };
 
@@ -56,6 +56,11 @@ export const saveOrder = (newOrder) => {
 export const saveOrderStart = () => {
   return {
     type: "SAVE_ORDER_START",
+  };
+};
+export const clearOrder = () => {
+  return {
+    type: "CLEAR_ORDER",
   };
 };
 

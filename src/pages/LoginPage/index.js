@@ -1,50 +1,49 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import css from "./style.module.css";
+import Spinner from "../../General/spinner";
 import Button from "../../General/Button";
 import { connect } from "react-redux";
 import * as actions from "../../redux/action/loginActions";
-import Spinner from "../../General/spinner";
 import { Redirect } from "react-router-dom";
-class Login extends Component {
-  state = {
-    email: " ",
-    password: " ",
+const Login = (props) => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const changeEmail = (event) => {
+    const newEmail = event.target.value;
+    setForm((formBefore) => ({
+      email: newEmail,
+      password: formBefore.password,
+    }));
   };
-  changeEmail = (event) => {
-    this.setState({ email: event.target.value });
+  const passwordlogin = (event) => {
+    const newPassword = event.target.value;
+    setForm((formBefore) => ({
+      email: formBefore.email,
+      password: newPassword,
+    }));
   };
-  password = (event) => {
-    this.setState({ password: event.target.value });
-  };
-  login = () => {
-    this.props.login(this.state.email, this.state.password);
+  const login = () => {
+    props.login(form.email, form.password);
   };
 
-  render() {
-    return (
-      <div className={css.Login}>
-        {this.props.userId && <Redirect to="orders" />}
-        <input
-          onChange={this.changeEmail}
-          type="text"
-          placeholder="e-mail хаяг"
-        />
-        <input
-          onChange={this.password}
-          type="password"
-          placeholder="password"
-        />
-        {this.props.logginIn && <Spinner />}
-        {this.props.firebaseError && (
-          <div style={{ color: "red" }}>
-            {this.props.firebaseError} kod: {this.props.firebaseErrorCode}
-          </div>
-        )}
-        <Button text="Login" buttonType="Success" clicked={this.login} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className={css.Login}>
+      {props.userId && <Redirect to="orders" />}
+      <input onChange={changeEmail} type="text" placeholder="e-mail хаяг" />
+      <input onChange={passwordlogin} type="password" placeholder="password" />
+      {props.logginIn && <Spinner />}
+      {props.firebaseError && (
+        <div style={{ color: "red" }}>
+          {props.firebaseError} kod: {props.firebaseErrorCode}
+        </div>
+      )}
+      <Button text="Login" buttonType="Success" clicked={login} />
+    </div>
+  );
+};
+
 const mapStateToProps = (state) => {
   return {
     logginIn: state.signupReducer.logginIn,

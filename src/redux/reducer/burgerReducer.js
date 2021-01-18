@@ -16,7 +16,6 @@ const initialState = {
 };
 const INGREDIENT_PRICES = { salad: 150, cheese: 250, bacon: 800, meat: 1500 };
 const reducer = (state = initialState, action) => {
-  console.log("reduceres", action);
   if (action.type === "ADD_INGREDIENT") {
     return {
       ...state,
@@ -38,6 +37,8 @@ const reducer = (state = initialState, action) => {
       totalPrice: newPrice,
       purchasing: newPrice > 1000,
     };
+  } else if (action.type === "CLEAR_ORDER") {
+    return initialState;
   }
   return state;
 };

@@ -21,7 +21,6 @@ export const signupUser = (email, password) => {
         dispatch(signupUserSuccess(token, userId));
       })
       .catch((err) => {
-        console.log(err);
         dispatch(signupUserError(err));
       });
     //

@@ -1,16 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../redux/action/signupActions";
 import { Redirect } from "react-router-dom";
-class Logout extends React.Component {
-  componentDidMount = () => {
-    this.props.logout();
-  };
-  state = {};
-  render() {
-    return <Redirect to="login" />;
-  }
-}
+const Logout = (props) => {
+  useEffect(() => {
+    props.logout();
+  }, []);
+  return <Redirect to="login" />;
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     logout: () => dispatch(actions.logout()),

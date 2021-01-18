@@ -36,7 +36,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         logginIn: false,
         saving: false,
-        token: action.idToken,
+        token: action.token,
         userId: action.userId,
       };
 

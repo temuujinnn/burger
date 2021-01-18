@@ -1,74 +1,85 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Redirect } from "react-router-dom";
 import css from "./style.module.css";
 import { connect } from "react-redux";
 import Toolbar from "../../components/Toolbar";
-import BurgerPage from "../BurgerPage";
 import SideBar from "../../components/SideBar";
-import OrderPage from "../OrderPage";
 import { Route, Switch } from "react-router-dom";
 import ShippingPage from "../ShippingPage";
 import LoginPage from "../LoginPage";
-import Signup from "../signUpPage";
 import Logout from "../../components/logout";
 import * as actions from "../../redux/action/loginActions";
 import * as signupActions from "../../redux/action/signupActions";
+import { BurgerStore } from "../../context/BurgerContext";
+import { OrderStore, orderStore } from "../../context/OrderContext";
 
-class App extends Component {
-  state = {
-    showSideBar: false,
-  };
+const BurgerPage = React.lazy(() => {
+  return import("../BurgerPage");
+});
+const OrderPage = React.lazy(() => {
+  return import("../OrderPage");
+});
+const Signup = React.lazy(() => {
+  return import("../signUpPage");
+});
 
-  toggleSideBar = () => {
-    this.setState((prevState) => {
-      return { showSideBar: !prevState.showSideBar };
-    });
+const App = (props) => {
+  const [showSideBar, setShowSideBar] = useState(false);
+
+  const toggleSideBar = () => {
+    setShowSideBar((prevShowSidebar) => !prevShowSidebar);
   };
-  componentDidMount = () => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     const expireDate = new Date(localStorage.getItem("expireDate"));
     const refreshToken = localStorage.getItem("refreshToken");
     if (token) {
       if (expireDate > new Date()) {
-        this.props.autologin(token, userId);
+        props.autologin(token, userId);
       } else {
         //token hugatsaa duussan logout hine
-        this.props.logout();
+        props.logout();
         //token huchingui bolohod uldej baiga hugatsaag tootsoloh
-        this.props.autologoutAfter(expireDate.getTime() - new Date().getTime());
+        props.autologoutAfter(expireDate.getTime() - new Date().getTime());
       }
     }
-  };
+  }, []);
 
-  render() {
-    return (
-      <div>
-        <Toolbar toggleSideBar={this.toggleSideBar} />
-        <SideBar
-          showSideBar={this.state.showSideBar}
-          toggleSideBar={this.toggleSideBar}
-        />
+  return (
+    <div>
+      <BurgerStore>
+        <Toolbar toggleSideBar={toggleSideBar} />
+        <SideBar showSideBar={showSideBar} toggleSideBar={toggleSideBar} />
         <main className={css.content}>
-          {this.props.userId ? (
-            <Switch>
-              <Route path="/logout" component={Logout} />
-              <Route path="/orders" component={OrderPage} />
-              <Route path="/ship" component={ShippingPage} />
-              <Route path="/" component={BurgerPage} />
-            </Switch>
-          ) : (
-            <Switch>
-              <Route path="/login" component={LoginPage} />
-              <Route path="/signup" component={Signup} />
-              <Redirect to="login" />
-            </Switch>
-          )}
+          <Suspense fallback={<div>tur hulee</div>}>
+            {props.userId ? (
+              <Switch>
+                <Route path="/logout" component={Logout} />
+
+                <Route path="/orders">
+                  <OrderStore>
+                    <OrderPage />
+                  </OrderStore>
+                </Route>
+
+                <Route path="/ship" component={ShippingPage} />
+                <Route path="/" component={BurgerPage} />
+              </Switch>
+            ) : (
+              <Switch>
+                <Route path="/login" component={LoginPage} />
+                <Route path="/signup" component={Signup} />
+                <Redirect to="login" />
+              </Switch>
+            )}
+          </Suspense>
         </main>
-      </div>
-    );
-  }
-}
+      </BurgerStore>
+    </div>
+  );
+};
+
 const mapStateToProps = (state) => {
   return {
     userId: state.signupReducer.userId,

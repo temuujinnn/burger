@@ -1,68 +1,48 @@
-import React from "react";
-import { Route } from "react-router-dom";
+import React, { useContext } from "react";
 import Burger from "../../components/Burger";
-import ContactData from "../../components/contactData";
 import Button from "../../General/Button";
+import { Route } from "react-router-dom";
 import css from "./style.module.css";
-import { connect } from "react-redux";
-class ShippingPage extends React.Component {
-  state = {
-    ingredients: null,
-    price: 0,
+import ContactData from "../../components/contactData";
+import BurgerContext from "../../context/BurgerContext";
+const ShippingPage = (props) => {
+  const ctx = useContext(BurgerContext);
+  const cancelOrder = () => {
+    props.history.goBack();
   };
-  componentWillMount() {
-    const query = new URLSearchParams(this.props.location.search);
-    const ingredients = {};
-    let price = 0;
-    for (let param of query.entries()) {
-      if (param[0] !== "dun") ingredients[param[0]] = param[1];
-      else price = param[1];
-    }
-    this.setState({ ingredients, price });
-  }
-  goBack = () => {
-    this.props.history.goBack();
+
+  const showContactData = () => {
+    props.history.replace("/ship/contact");
   };
-  CancelOrder = () => {
-    this.props.history.goBack("/");
-  };
-  showContactData = () => {
-    this.props.history.replace("/ship/contact");
-  };
-  render() {
-    return (
-      <div className={css.ShippingPage}>
-        <p style={{ fontSize: "20px" }}>
-          <strong>Таны захиалга амттай байх болно гэж найдаж байна...</strong>
-        </p>
-        <p style={{ fontSize: "20px" }}>
-          <strong> Дүн: {this.props.price}</strong>
-        </p>
-        <Burger orts={this.state.ingredients} />
-        <Button
-          clicked={this.CancelOrder}
-          buttonType="Danger"
-          text="Захийлгыг цуцлах"
-        />
-        <Button
-          clicked={this.showContactData}
-          buttonType="Success"
-          text="Хүргэлтийн мэдээлэл оруулах"
-        />
-        <Route path="/ship/contact">
-          <ContactData
-            ingredients={this.state.ingredients}
-            price={this.state.price}
-          />
-        </Route>
-      </div>
-    );
-  }
-}
-const mapStateToProps = (state) => {
-  return {
-    price: state.burgerReducer.totalPrice,
-  };
+
+  return (
+    <div className={css.ShippingPage}>
+      <p style={{ fontSize: "24px" }}>
+        <strong>Таны захиалга амттай байх болно гэж найдаж байна...</strong>
+      </p>
+      <p style={{ fontSize: "24px" }}>
+        <strong>Дүн : {ctx.burger.totalPrice}₮</strong>
+      </p>
+
+      <Burger />
+
+      <Button
+        clicked={cancelOrder}
+        buttonType="Danger"
+        text="ЗАХИАЛГЫГ ЦУЦЛАХ"
+      />
+
+      <Button
+        clicked={showContactData}
+        buttonType="Success"
+        text="ХҮРГЭЛТИЙН МЭДЭЭЛЭЛ ОРУУЛАХ"
+      />
+
+      <Route path="/ship/contact">
+        <ContactData />
+      </Route>
+    </div>
+  );
 };
 
-export default connect(mapStateToProps)(ShippingPage);
+export default ShippingPage;

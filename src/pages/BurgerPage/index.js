@@ -1,65 +1,44 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import Burger from "../../components/Burger";
 import BuildControls from "../../components/BuildControls";
 import Modal from "../../General/modal";
 import OrderSummary from "../../components/OrderSummary";
-import Spinner from "../../General/spinner";
 
-class BurgerPage extends Component {
-  state = {
-    confirmOrder: false,
-  };
+const BurgerPage = (props) => {
+  const [confirmOrder, setConfirmOrder] = useState(false);
 
-  componentDidMount = () => {};
-
-  continueOrder = () => {
+  const continueOrder = () => {
     const params = [];
-    for (let orts in this.props.burgeriinOrts) {
-      params.push(orts + "=" + this.props.burgeriinOrts[orts]);
+    for (let orts in props.burgeriinOrts) {
+      params.push(orts + "=" + props.burgeriinOrts[orts]);
     }
-    params.push("dun=" + this.props.niitUne);
+    params.push("dun=" + props.niitUne);
 
-    this.props.history.push({
+    props.history.push({
       pathname: "/ship",
       search: params.join("&"),
     });
-    this.closeConfirmModal();
+    closeConfirmModal();
   };
 
-  showConfirmModal = () => {
-    this.setState({ confirmOrder: true });
+  const showConfirmModal = () => {
+    setConfirmOrder(true);
   };
 
-  closeConfirmModal = () => {
-    this.setState({ confirmOrder: false });
+  const closeConfirmModal = () => {
+    setConfirmOrder(false);
   };
 
-  render() {
-    return (
-      <div>
-        <Modal
-          CloseConfirmModal={this.closeConfirmModal}
-          show={this.state.confirmOrder}
-        >
-          {this.state.loading ? (
-            <Spinner />
-          ) : (
-            <OrderSummary
-              onCancel={this.closeConfirmModal}
-              onContinue={this.continueOrder}
-            />
-          )}
-        </Modal>
+  return (
+    <div>
+      <Modal CloseConfirmModal={closeConfirmModal} show={confirmOrder}>
+        <OrderSummary onCancel={closeConfirmModal} onContinue={continueOrder} />
+      </Modal>
 
-        <Burger />
-        <BuildControls
-          showConfirmModal={this.showConfirmModal}
-          ortsHasah={this.props.burgereesOrtsHas}
-          ortsNemeh={this.props.burgertOrtsNem}
-        />
-      </div>
-    );
-  }
-}
+      <Burger />
+      <BuildControls showConfirmModal={showConfirmModal} />
+    </div>
+  );
+};
 
 export default BurgerPage;
